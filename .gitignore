@@ -1,0 +1,10 @@
+*.fqa
+*.db
+*.rock
+test.lua
+*.log
+*.out
+test/
+tmp/
+
+
