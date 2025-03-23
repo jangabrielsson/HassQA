@@ -6,8 +6,8 @@
   [
     {
       "tag": "Rel1",
-      "version": "1.0",
-      "description": "New release v1.0",
+      "version": "0.75",
+      "description": "New release v0.75",
       "exclude": ["User","Config"],
       "date": "2025-03-23"
     }
