@@ -9,12 +9,14 @@ Copyright (C) 2007 Free Software Foundation, Inc. <https://fsf.org/>
 Everyone is permitted to copy and distribute verbatim copies
 of this license document, but changing it is not allowed.
 --]]
---_DEVELOP = true
+_DEVELOP = "../../fibemu"
 if require and not QuickApp then require("hc3emu") end
 
 ---@diagnostic disable: undefined-field
 --%%name=HASS
 --%%type=com.fibaro.deviceController
+--%%uid=UPD896846032517894
+--%%save=HASS.fqa
 --%%state=state.db
 --%%proxy=HASSProxy3
 --%%var=url:config.HASS.url
@@ -23,10 +25,10 @@ if require and not QuickApp then require("hc3emu") end
 --%%var=debug:"main,wsc,child,color,battery,speaker,send,late"
 --%%conceal=token:<put you HASS api token here>
 
---%%file=../fibemu/lib/QwikChild.lua:QC
+--%%file=$hc3emu.QwikChild:QC
 --%%file=Utils.lua:utils
 --%%file=Classes.lua:classes
---%%file=../fibemu/lib/BetterQA.lua:BQA
+--%%file=../../fibemu/lib/BetterQA.lua:BQA
 --%%file=Config.lua:config
 --%% file=User.lua:User
 
