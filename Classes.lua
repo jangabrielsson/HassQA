@@ -108,12 +108,21 @@ function MODULE_0classes() -- named to be loaded first...
   HASS.classes.DeviceTracker = { type = "com.fibaro.binarySensor",}
   HASS.classes.Calendar = { type = "com.fibaro.binarySensor",}
   HASS.classes.Zone = { type = "com.fibaro.binarySensor",}
-  HASS.classes.Thermostat = { 
-    type = "com.fibaro.hvacSystemAuto",
-    UI = {
+  local ThermostatUI = {
+      {label='currentTempLabel',text='Current: --°C'},
+      {label='targetTempLabel',text='Target: --°C'},
+      {label='hvacActionLabel',text='Status: idle'},
+      {label='heatingDemandLabel',text='Heating demand: --%'},
       {label='preset',text='Preset:'},
       {select='presetSelector',text='Preset',options={},values={},onToggled='presetSelected'},
+  }
+  HASS.classes.Thermostat = { 
+    type = "com.fibaro.hvacSystemAuto",
+    properties = {
+      logTemp = "",
+      unit = "C"
     },
+    UI = ThermostatUI
   }
   local InputTextUI = {
     {label="textLabel",text="<Text>"},
@@ -359,7 +368,8 @@ function HASSChild:debugf(fmt,...)
 end
 
 function HASSChild:update_sensor_battery(entity)
-  self:debugf("battery:%s%%",entity.state)
+  local name = self.name:match("(.-)%s*%(HASS%)$") or self.name
+  DEBUGF('battery',"'%s' battery:%s%%",name,entity.state)
   self:updateProperty('batteryLevel',round(entity.state))
 end
 
@@ -786,7 +796,8 @@ function Cover:setValue(value) -- Value is type of integer (0-99)
 end
 function Cover:logState(entity)
   local a = entity.attributes
-  self:debugf("%s %s%%",entity.state,a.current_position or 0)
+  local name = self.name:match("(.-)%s*%(HASS%)$") or self.name
+  DEBUGF('cover',"'%s' %s %s%%",name,entity.state,a.current_position or 0)
 end
 function Cover:update(entity)
   self.mainId = entity
@@ -817,17 +828,24 @@ function Thermostat:__init(device)
 end
 function Thermostat:logState(entity)
   local a = entity.attributes
-  local pr = string.buff()
-  pr.printf("Thermostat %s\n",entity.state)
-  pr.printf("  current temperature: %s\n",a.current_temperature or 0)
-  pr.printf("  temperature: %s\n",a.temperature or 0)
-  pr.printf("  min temperature: %s\n",a.min_temp or 0)
-  pr.printf("  min temperature: %s\n",a.min_temp or 0)
-  pr.printf("  hvac action %s\n",a.hvac_action or 0)
-  pr.printf("  hvac modes %s\n",json.encode(a.hvac_modes or {}))
-  pr.printf("  preset mode %s\n",a.preset_mode or 0)
-  pr.printf("  preset modes %s\n",json.encode(a.preset_modes or {}))
-  self:debugf(pr.tostring())
+  local name = self.name:match("(.-)%s*%(HASS%)$") or self.name
+  
+  -- Helper to safely convert values for display
+  local function safeVal(v, default)
+    if v == nil or type(v) == 'function' or type(v) == 'table' then return default or 'nil' end
+    return tostring(v)
+  end
+  
+  DEBUGF('thermostat',"'%s' Thermostat %s",name,entity.state)
+  DEBUGF('thermostat',"'%s'   current temperature: %s",name,safeVal(a.current_temperature, '0'))
+  DEBUGF('thermostat',"'%s'   target temperature: %s",name,safeVal(a.temperature, 'nil'))
+  DEBUGF('thermostat',"'%s'   min temperature: %s",name,safeVal(a.min_temp, '0'))
+  DEBUGF('thermostat',"'%s'   max temperature: %s",name,safeVal(a.max_temp, '0'))
+  DEBUGF('thermostat',"'%s'   hvac action: %s",name,safeVal(a.hvac_action, 'none'))
+  DEBUGF('thermostat',"'%s'   hvac modes: %s",name,json.encode(a.hvac_modes or {}))
+  DEBUGF('thermostat',"'%s'   preset mode: %s",name,safeVal(a.preset_mode, 'none'))
+  DEBUGF('thermostat',"'%s'   preset modes: %s",name,json.encode(a.preset_modes or {}))
+  DEBUGF('thermostat',"'%s'   heating demand: %s",name,safeVal(a.pi_heating_demand, 'n/a'))
 end
 function Thermostat:update(entity)
   self.mainId = entity
@@ -835,15 +853,64 @@ function Thermostat:update(entity)
   local state = entity.state
   local a = entity.attributes
   self:updateProperty('thermostatMode',state:capitalize())
-  local value,min,max = a.temperature,a.min_temp,a.max_temp 
-  if state == 'heat' then
-    self:updateProperty('heatingThermostatSetpoint', { value= a.temperature, unit= unit or "C" })
-  elseif state == 'cool' then
-    self:updateProperty('coolingThermostatSetpoint', { value= value, unit= unit or "C" })
-  elseif state == 'auto' then
-    self:updateProperty('heatingThermostatSetpoint', { value= value, unit= unit or "C" })
-    self:updateProperty('coolingThermostatSetpoint', { value= value, unit= unit or "C" })
+  
+  -- Update UI labels with current values
+  local currentTemp = tonumber(a.current_temperature) or 0
+  local targetTemp = a.temperature and tonumber(a.temperature) or nil
+  local hvacAction = tostring(a.hvac_action or 'idle')
+  local unit = 'C'
+  
+  local name = self.name:match("(.-)%s*%(HASS%)$") or self.name
+  DEBUGF('thermostat',"Thermostat:'%s' Updating UI - currentTemp: %.1f, targetTemp: %s, hvacAction: %s", 
+    name, currentTemp, targetTemp and string.format("%.1f", targetTemp) or "nil", hvacAction)
+  
+  -- Update UI with a small delay to ensure UI elements are ready (especially during init)
+  local function updateUI()
+    local stat, err = pcall(function()
+      self:updateView('currentTempLabel', 'text', string.format('Current: %.1f%s', currentTemp, unit))
+      
+      -- Only show target temperature if it exists
+      if targetTemp then
+        self:updateView('targetTempLabel', 'text', string.format('Target: %.1f%s', targetTemp, unit))
+      else
+        self:updateView('targetTempLabel', 'text', 'Target: --')
+      end
+      
+      self:updateView('hvacActionLabel', 'text', string.format('Status: %s', hvacAction))
+      
+      -- Update heating demand if available (not all thermostats have this)
+      local heatingDemand = a.pi_heating_demand
+      if heatingDemand then
+        self:updateView('heatingDemandLabel', 'text', string.format('Heating demand: %d%%', heatingDemand))
+      else
+        self:updateView('heatingDemandLabel', 'text', 'Heating demand: --%')
+      end
+    end)
+    if not stat then 
+      self:debugf("ERROR updating UI views: %s", err) 
+    end
   end
+  
+  -- Delay UI update to ensure elements are ready (needs more time when debugging is off)
+  setTimeout(updateUI, 500)
+  
+  -- Update logTemp property to show current temperature (Fibaro standard property)
+  self:updateProperty('logTemp', string.format('%.1f°C', currentTemp))
+  self:updateProperty('unit', 'C')
+  
+  -- Update thermostat setpoints based on mode (only if target temp exists)
+  if targetTemp then
+    local value,min,max = targetTemp,a.min_temp,a.max_temp 
+    if state == 'heat' then
+      self:updateProperty('heatingThermostatSetpoint', { value= targetTemp, unit= unit or "C" })
+    elseif state == 'cool' then
+      self:updateProperty('coolingThermostatSetpoint', { value= value, unit= unit or "C" })
+    elseif state == 'auto' or state == 'heat_cool' then
+      self:updateProperty('heatingThermostatSetpoint', { value= value, unit= unit or "C" })
+      self:updateProperty('coolingThermostatSetpoint', { value= value, unit= unit or "C" })
+    end
+  end
+  
   self:updateView('presetSelector','selectedItem',a.preset_mode)
 end
 --------------- Fibaro functions -------------------

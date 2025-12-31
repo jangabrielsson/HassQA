@@ -46,7 +46,7 @@ if require and not QuickApp then require("hc3emu") end
 
 --%% debug=refresh:false
 
-local VERSION = "0.75"
+local VERSION = "0.76"
 local fmt = string.format
 local token,URL
 local dfltDebugFlags = "child"
@@ -121,6 +121,12 @@ function QuickApp:onInit()
   -- fibaro.debugFlags.child = true  -- Generic Child qa debug
   -- fibaro.debugFlags.color = true  -- Color light debugging
   -- fibaro.debugFlags.event = true  -- Logs all events from HASS
+  -- fibaro.debugFlags.battery = true -- Battery state changes
+  -- fibaro.debugFlags.speaker = true -- Speaker state changes
+  -- fibaro.debugFlags.send = true    -- Logs all send commands to HASS
+  -- fibaro.debugFlags.late = true    -- Logs late entities created after init
+  -- fibaro.debugFlags.cover = true   -- Cover state changes
+   
 
   token,URL = self.qvar.token,self.qvar.url
   if not(token and URL) then

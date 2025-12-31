@@ -81,8 +81,13 @@ function WSConnection:ping()
 end
 
 function WSConnection:sendRaw(data)
+  if not self.sock or not self.connected then
+    WARNINGF("Cannot send, not connected")
+    return false
+  end
   self.sock:send(json.encode(data))
   self:ping()
+  return true
 end
 
 function WSConnection:send(data,cb)
@@ -101,24 +106,98 @@ end
 
 function WSConnection:connect()
   DEBUGF('wsc',"Websocket connect")
-  local function handleConnected()
+  self.connecting = false
+  self.connected = false
+  self.reconnectTimer = nil
+  self.reconnectDelay = 1000 -- Start with 1 second
+  self.maxReconnectDelay = 60000 -- Cap at 60 seconds
+  
+  -- Forward declarations
+  local connect, handleConnected, handleDisconnected, handleError, handleDataReceived, scheduleReconnect
+  
+  handleConnected = function()
     DEBUGF('wsc',"Connected")
+    self.connected = true
+    self.connecting = false
+    self.reconnectDelay = 1000 -- Reset backoff on successful connection
   end
 
-  local function connect()
+  scheduleReconnect = function()
+    if self.reconnectTimer then return end -- Already scheduled
+    if self.connecting then return end -- Connection attempt in progress
+    
+    local delay = self.reconnectDelay
+    WARNINGF("Will reconnect in %ds", delay / 1000)
+    self.reconnectTimer = setTimeout(function()
+      self.reconnectTimer = nil
+      connect()
+      -- Exponential backoff with cap
+      self.reconnectDelay = math.min(self.reconnectDelay * 2, self.maxReconnectDelay)
+    end, delay)
+  end
+
+  connect = function()
+    if self.connecting or self.connected then return end
+    
+    self.connecting = true
+    self.connected = false
+    
+    -- Stop ping timer when reconnecting
+    if pinger then
+      pinger = clearTimeout(pinger)
+      pinger = nil
+    end
+    
+    -- Clean up old socket if it exists
+    if self.sock then
+      PCALL(function() self.sock:disconnect() end)
+      self.sock = nil
+    end
+    
     DEBUGF('wsc',"Connect: %s",self.url)
+    
+    -- Create new WebSocket instance
+    self.sock = net.WebSocketClient()
+    self.sock.timeout = 0
+    self.sock:addEventListener("connected", handleConnected)
+    self.sock:addEventListener("disconnected", handleDisconnected)
+    self.sock:addEventListener("error", handleError)
+    self.sock:addEventListener("dataReceived", handleDataReceived)
+    
     self.sock:connect(self.url)
   end
 
-  local function handleDisconnected(a,b)
-    WARNINGF("Disconnected - will reconnect in 5s")
-    setTimeout(function() connect() end,5000)
+  handleDisconnected = function(a,b)
+    WARNINGF("Disconnected")
+    self.connected = false
+    self.connecting = false
+    
+    -- Stop ping timer
+    if pinger then
+      pinger = clearTimeout(pinger)
+      pinger = nil
+    end
+    
+    scheduleReconnect()
   end
-  local function handleError(err)
+  
+  handleError = function(err)
     ERRORF("Error: %s", err)
+    self.connected = false
+    self.connecting = false
+    
+    -- Stop ping timer
+    if pinger then
+      pinger = clearTimeout(pinger)
+      pinger = nil
+    end
+    
+    -- Schedule reconnect on error
+    scheduleReconnect()
   end
+  
   local nEvents = 0
-  local function handleDataReceived(data)
+  handleDataReceived = function(data)
     nEvents = nEvents+1
     data = json.decode(data)
     if data.id and mcbs[data.id] then
@@ -136,13 +215,7 @@ function WSConnection:connect()
       DEBUGF('wsc',"Unknown message type: %s",data.type)
     end
   end
-  self.sock = net.WebSocketClient()
-  self.sock.timeout=0
-  self.sock:addEventListener("connected", handleConnected)
-  self.sock:addEventListener("disconnected", handleDisconnected)
-  self.sock:addEventListener("error", handleError)
-  self.sock:addEventListener("dataReceived", handleDataReceived)
-
+  
   connect()
 end
 

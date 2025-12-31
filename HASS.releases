@@ -10,6 +10,13 @@
       "description": "New release v0.75",
       "exclude": ["User","Config"],
       "date": "2025-03-23"
-    }
+    },
+  {
+      "tag": "Rel1",
+      "version": "0.76",
+      "description": "New release v0.76",
+      "exclude": ["User","Config"],
+      "date": "2025-12-30"
+    }    
   ]
 }
