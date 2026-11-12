@@ -18,12 +18,12 @@ of this license document, but changing it is not allowed.
 --% %db:state.db
 --% %proxy:true
 --%%mode:offline
---%%var:url=config.HASS_url
+--%%var:url=config.HASS_url,"<HASS url>"
 --%%var:token=config.HASS_token,"<put you HASS api token here>"
 --%%var:auto="true"
 --%%var:debug="main,wsc,child,color,battery,speaker,send,late"
 
---%%file:$qwikchild.lua,QC
+--%%file:$qwikchild.lua,QChild
 --%%file:Utils.lua,utils
 --%%file:Classes.lua,classes
 --%%file:Config.lua,config
@@ -41,7 +41,7 @@ of this license document, but changing it is not allowed.
 
 --% %debug:refresh:false
 
-local VERSION = "0.75"
+local VERSION = "0.75.0"
 local fmt = string.format
 local token,URL
 local dfltDebugFlags = "child"
