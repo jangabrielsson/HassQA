@@ -50,18 +50,6 @@ function math.round(v) return math.floor((tonumber(v) or 0)+0.5) end
 function math.to100(v) return math.floor((v/255.0)*100+0.5) end
 function math.to255(v) return math.floor((v/100.0)*255+0.5) end
 
-if fibaro.fibemu then
-  function PCALL(f,...) 
-    return xpcall(f,function(err)
-      ERRORF("%s",err) 
-      print(os.debug.traceback())
-      end,
-    ...) 
-  end
-else
-  function PCALL(f,...) return pcall(f,...) end
-end
-
 class 'WSConnection'
 function WSConnection:__init(url,token)
   self.token = token
@@ -88,9 +76,10 @@ end
 function WSConnection:send(data,cb)
   mid = mid + 1
   data.id = mid
+  local mid1 = mid
   mcbs[mid] = {
     cb = cb,
-    timeout = setTimeout(function() mcbs[mid] = nil end,5000) -- 5s timeout
+    timeout = setTimeout(function() mcbs[mid1] = nil end,5000) -- 5s timeout
   }
   self:sendRaw(data)
 end
@@ -127,7 +116,9 @@ function WSConnection:connect()
       if timeout then clearTimeout(timeout) end
       if cb then 
         local stat,err = PCALL(cb,data) 
-        if not stat then ERRORF("Callback error: %s",err) end
+        if not stat then 
+          ERRORF("Callback error: %s",err) 
+        end
       else print(json.encode(data)) end
       return
     end

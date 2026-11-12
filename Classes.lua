@@ -22,7 +22,7 @@ HASS = HASS or {} -- Table to store "global" HASS functions and data
 HASS.IFmap = HASS.IFmap or {}
 
 local fmt = string.format
-
+function math.round(v) return math.floor((tonumber(v) or 0)+0.5) end
 local round =  math.round
 local to100 = math.to100
 local to255 = math.to255

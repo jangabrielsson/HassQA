@@ -1,46 +1,66 @@
 {
-  // Use IntelliSense to learn about possible attributes.
-  // Hover to view descriptions of existing attributes.
-  // For more information, visit: https://go.microsoft.com/fwlink/?linkid=830387
   "version": "0.2.0",
   "configurations": [
-    
     {
-      "type": "lua-local",
+      "name": "Flua: Run Current File",
+      "type": "debugpy",
       "request": "launch",
-      "name": "Debug Local-Lua",
-      "program": {
-        "lua": "lua",
-        "file": "QA_example.lua"
-      },
-      "args": [
-        "${workspaceFolder}"
-      ]
+      "module": "flua",
+      "args": ["${relativeFile}"],
+      "console": "internalConsole",
+      "cwd": "${workspaceFolder}",
+      "justMyCode": false
     },
     {
-      "name": "Lua MobDebug: Listen",
-      "type": "luaMobDebug",
-      "request": "attach",
-      "workingDirectory": "${workspaceFolder}",
-      "sourceBasePath": "${workspaceFolder}",
-      "listenPublicly": false,
-      "listenPort": 8172,
-      //"stopOnEntry": true,
-      "sourceEncoding": "UTF-8"
+      "name": "Flua: Run Current File (Terminal)",
+      "type": "debugpy",
+      "request": "launch",
+      "module": "flua",
+      "args": ["${relativeFile}"],
+      "console": "integratedTerminal",
+      "cwd": "${workspaceFolder}",
+      "justMyCode": false
     },
     {
-      "name": "Lua MobDebug: Current File",
+      "name": "Flua: Run Current File (UI)",
+      "type": "debugpy",
+      "request": "launch",
+      "module": "flua",
+      "args": ["--ui", "8090", "${relativeFile}"],
+      "console": "integratedTerminal",
+      "cwd": "${workspaceFolder}",
+      "justMyCode": false
+    },
+    {
+      "name": "Flua: Debug Current File (mobdebug)",
       "type": "luaMobDebug",
       "request": "launch",
       "workingDirectory": "${workspaceFolder}",
       "sourceBasePath": "${workspaceFolder}",
       "listenPort": 8172,
-      //"stopOnEntry": true,
+      "stopOnEntry": false,
       "sourceEncoding": "UTF-8",
-      "interpreter": "lua",
+      "interpreter": "/opt/homebrew/bin/flua",
       "arguments": [
         "${relativeFile}"
-      ]
+      ],
+      "listenPublicly": true
+    },
+    {
+      "name": "Flua: Debug Current File (UI+mobdebug)",
+      "type": "luaMobDebug",
+      "request": "launch",
+      "workingDirectory": "${workspaceFolder}",
+      "sourceBasePath": "${workspaceFolder}",
+      "listenPort": 8172,
+      "stopOnEntry": false,
+      "sourceEncoding": "UTF-8",
+      "interpreter": "/opt/homebrew/bin/flua",
+      "arguments": [
+        "--ui", "8090",
+        "${relativeFile}"
+      ],
+      "listenPublicly": true
     }
   ]
 }

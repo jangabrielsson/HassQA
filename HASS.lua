@@ -9,42 +9,37 @@ Copyright (C) 2007 Free Software Foundation, Inc. <https://fsf.org/>
 Everyone is permitted to copy and distribute verbatim copies
 of this license document, but changing it is not allowed.
 --]]
-_DEVELOP = "../../hc3emu"
-if require and not QuickApp then require("hc3emu") end
 
 ---@diagnostic disable: undefined-field
---%%name=HASS
---%%type=com.fibaro.deviceController
---%%uid=UPD896846032517894
---%%save=HASS.fqa
---%%state=state.db
---%%proxy=HASSProxy3
---%%offline=true
---%%webui=true
---%%var=url:config.HASS_url
---%%var=token:config.HASS_token
---%%var=auto:"true"
---%%var=debug:"main,wsc,child,color,battery,speaker,send,late"
---%%conceal=token:<put you HASS api token here>
+--%%name:HASS
+--%%type:com.fibaro.deviceController
+--%%uid:UPD896846032517894
+--% %save:HASS.fqa
+--% %db:state.db
+--% %proxy:true
+--%%mode:offline
+--%%var:url=config.HASS_url
+--%%var:token=config.HASS_token,"<put you HASS api token here>"
+--%%var:auto="true"
+--%%var:debug="main,wsc,child,color,battery,speaker,send,late"
 
---%%file=$hc3emu.QwikChild:QC
---%%file=Utils.lua:utils
---%%file=Classes.lua:classes
---%%file=../../fibemu/lib/BetterQA.lua:BQA
---%%file=Config.lua:config
---%% file=User.lua:User
+--%%file:$qwikchild.lua,QC
+--%%file:Utils.lua,utils
+--%%file:Classes.lua,classes
+--%%file:Config.lua,config
+--%%file:User.lua,User
 
---%%u={label="title",text="Label (Title)"}
---%%u={label="label_ID_2",text="QuickAppChildren:"}
---%%u={select="qaSelect",text="QuickAppChild",visible=true,onToggled="qaSelected",options={}}
---%%u={select="classSelect",text="Class",visible=true,onToggled="classSelected",options={}}
---%%u={label="qaInfo",text="QA info"}
---%%u={multi="entitySelect",text="Entities",visible=true,onToggled="entitySelected",options={}}
---%%u={{button="buttonA",text="Create",visible=true,onLongPressDown="",onLongPressReleased="",onReleased="buttonA"},{button="buttonB",text="Entity info",visible=true,onLongPressDown="",onLongPressReleased="",onReleased="buttonB"}}
---%%u={{button="syncStates",text="Resync",visible=true,onLongPressDown="",onLongPressReleased="",onReleased="syncStates"},{button="restart",text="Restart",visible=true,onLongPressDown="",onLongPressReleased="",onReleased="restart"},{button="dump",text="Dump config",visible=true,onLongPressDown="",onLongPressReleased="",onReleased="dumpConfig"}}
---%%u={label="logLabel",text=""}
+--%%u:{label="title",text="Label (Title)"}
+--%%u:{label="label_ID_2",text="QuickAppChildren:"}
+--%%u:{select="qaSelect",text="QuickAppChild",visible=true,onToggled="qaSelected",options={}}
+--%%u:{select="classSelect",text="Class",visible=true,onToggled="classSelected",options={}}
+--%%u:{label="qaInfo",text="QA info"}
+--%%u:{multi="entitySelect",text="Entities",visible=true,onToggled="entitySelected",options={}}
+--%%u:{{button="buttonA",text="Create",visible=true,onLongPressDown="",onLongPressReleased="",onReleased="buttonA"},{button="buttonB",text="Entity info",visible=true,onLongPressDown="",onLongPressReleased="",onReleased="buttonB"}}
+--%%u:{{button="syncStates",text="Resync",visible=true,onLongPressDown="",onLongPressReleased="",onReleased="syncStates"},{button="restart",text="Restart",visible=true,onLongPressDown="",onLongPressReleased="",onReleased="restart"},{button="dump",text="Dump config",visible=true,onLongPressDown="",onLongPressReleased="",onReleased="dumpConfig"}}
+--%%u:{label="logLabel",text=""}
 
---%% debug=refresh:false
+--% %debug:refresh:false
 
 local VERSION = "0.75"
 local fmt = string.format
@@ -98,6 +93,11 @@ Sets up variables and creates the websocket connection.
 Flow continues in authenticated() when the websocket is authenticated.
 --------------------------------------------------------------]]
 function QuickApp:onInit()
+  quickApp = self
+  self.qvar = self.qvar or {}
+  for _,v in ipairs(self.properties.quickAppVariables or {}) do
+    self.qvar[v.name] = v.value
+  end
   printc("yellow","%s v:%s",self.name,VERSION)
   self:updateView("title","text",self.name.." v:"..VERSION)
   self:setupUIhandler()
@@ -237,6 +237,7 @@ function QuickApp:loadAuto()
     if d.auto then
       local types = type(d.auto) == 'string' and {d.auto} or d.auto
       for _,typ in ipairs(types) do
+        print(className)
         self:loadAutoAux(className,typ)
       end
     end
