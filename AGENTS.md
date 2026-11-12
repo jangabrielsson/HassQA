@@ -122,6 +122,23 @@ Check: the QA name is the normal name (not a `*_Proxy` build — proxy mode
 packages differ), placeholders are in place, and no real credential appears
 anywhere in the JSON.
 
+## Releases
+
+Release automation lives in `scripts/` (same style as the Dirigera project):
+
+- `./scripts/create-release.sh` — interactive release: bumps the version,
+  packs the .fqa, commits, tags, pushes, creates the GitHub release, and
+  generates a forum post. `--preview` shows the notes without writing.
+- `./scripts/setversion.sh X.Y.Z` — bump the version in `.version` and
+  `local VERSION` in `HASS.lua`.
+
+The packed artifact is **`HassQA.fqa` in the repo root** (see the
+`!HassQA.fqa` exception in `.gitignore`), not `dist/`. The qaDist manifest
+(`../qaDist/dist.json`) downloads `HassQA.fqa` from the repo root at the
+release tag and reads the installed version from the fqa's `main` file with
+`local VERSION = "..."` — keep `VERSION_FILES` in
+`scripts/project-config.sh` in sync with that pattern.
+
 ## Agent skills
 
 This project ships Copilot skills under `.github/skills/` (flua-setup,
