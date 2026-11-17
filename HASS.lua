@@ -73,10 +73,22 @@ function MessageHandler.event(data,ws)
   local entity_id = data.entity_id
   DEBUGF('event',"Event %s",entity_id)
   local entity = HASS.entities[entity_id]
+  if data.new_state == nil then -- entity removed from HASS
+    DEBUGF('late',"Entity %s removed",entity_id)
+    if entity then -- tell subscribers it's gone, then drop it
+      entity:change({state='unavailable',attributes=entity.attributes})
+      HASS.entities[entity_id] = nil
+    end
+    skippedEntities[entity_id] = nil
+    return
+  end
   if entity then entity:change(data.new_state,data.old_state)
   elseif skippedEntities[entity_id] then
     DEBUGF('event',"Ignoring %s",entity_id)
-  else -- late entity after a HASS restart? or an newly entity created
+  elseif entityFilter:skip(data.new_state) then -- late entity matching the filter
+    DEBUGF('event',"Skipping late entity %s",entity_id)
+    skippedEntities[entity_id] = true
+  else -- late entity after a HASS restart? or a newly created entity
     DEBUGF("late","Late entity %s",entity_id)
     local stat,entity = pcall(Entity,data.new_state)
     if not stat then 
@@ -189,7 +201,7 @@ local climate = json.decode([[{
         }
     }]])
 
-function QuickApp:authenticated() -- Called when websocket is authenticated
+function QuickApp:authenticated() -- Called when websocket is (re)authenticated
   DEBUGF('main',"Fetching HASS entities")
   self.WS:send({type= "get_states"},function(data)
     data = data.result
@@ -198,12 +210,20 @@ function QuickApp:authenticated() -- Called when websocket is authenticated
     -- table.insert(data,1,climate)
     for _,e in ipairs(data) do
       if not entityFilter:skip(e) then
-        local entity = Entity(e)
-        entities[e.entity_id] = entity
+        local entity = entities[e.entity_id]
+        if entity then -- reconnect/resync: update in place so subscribers survive
+          entity:change(e)
+        else
+          entities[e.entity_id] = Entity(e)
+        end
       else 
         DEBUGF('main',"Skipping %s",e.entity_id)
         skippedEntities[e.entity_id] = true
       end
+    end
+    if self._initialized then -- reconnect: entities synced, just resubscribe to events
+      self.WS:send({type= "subscribe_events",event_type= "state_changed"})
+      return
     end
     self._initialized = true
     local children = self:getChildrenUidMap()

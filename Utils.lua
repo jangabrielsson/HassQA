@@ -15,6 +15,8 @@ function DEBUGF(flag,fmt,...)
     print(str)
   end
 end
+PCALL = pcall
+
 function ERRORF(f,...) 
   local str = fmt(f,...)
   quickApp:log("Error:"..str)
@@ -58,14 +60,25 @@ end
 
 local mid,mcbs = 99,{}
 
-local pinger = nil
+local PING_INTERVAL = 15*1000 -- keepalive ping when idle
+local PONG_TIMEOUT = 10*1000  -- no pong within this => dead connection
+
+local pinger,pongTimer = nil,nil
 function WSConnection:ping()
   if pinger then
     pinger = clearTimeout(pinger)
   end
-  pinger = setTimeout(function() 
-    self:send({type="ping"},function() self:ping() end)
-  end,15*1000)
+  pinger = setTimeout(function()
+    if pongTimer then pongTimer = clearTimeout(pongTimer) end
+    pongTimer = setTimeout(function() -- half-open connection, force a reconnect
+      pongTimer = nil
+      self:reconnect("No pong from HASS")
+    end,PONG_TIMEOUT)
+    self:send({type="ping"},function()
+      if pongTimer then pongTimer = clearTimeout(pongTimer) end
+      self:ping()
+    end,PONG_TIMEOUT)
+  end,PING_INTERVAL)
 end
 
 function WSConnection:sendRaw(data)
@@ -73,15 +86,25 @@ function WSConnection:sendRaw(data)
   self:ping()
 end
 
-function WSConnection:send(data,cb)
+function WSConnection:send(data,cb,timeoutMs)
   mid = mid + 1
   data.id = mid
   local mid1 = mid
   mcbs[mid] = {
     cb = cb,
-    timeout = setTimeout(function() mcbs[mid1] = nil end,5000) -- 5s timeout
+    timeout = setTimeout(function() mcbs[mid1] = nil end,timeoutMs or 5000) -- 5s timeout
   }
   self:sendRaw(data)
+end
+
+function WSConnection:reconnect(why)
+  if self._reconnecting then return end -- a reconnect is already under way
+  self._reconnecting = true
+  if pinger then pinger = clearTimeout(pinger) end
+  if pongTimer then pongTimer = clearTimeout(pongTimer) end
+  WARNINGF("%s - will reconnect in 5s",why)
+  if self.sock then pcall(function() self.sock:close() end) end
+  setTimeout(function() self:connect() end,5000) -- fresh socket
 end
 
 function WSConnection:serviceCall(domain, service, data, cb)
@@ -91,6 +114,7 @@ end
 function WSConnection:connect()
   DEBUGF('wsc',"Websocket connect")
   local function handleConnected()
+    self._reconnecting = false
     DEBUGF('wsc',"Connected")
   end
 
@@ -100,8 +124,7 @@ function WSConnection:connect()
   end
 
   local function handleDisconnected(a,b)
-    WARNINGF("Disconnected - will reconnect in 5s")
-    setTimeout(function() connect() end,5000)
+    self:reconnect("Disconnected")
   end
   local function handleError(err)
     ERRORF("Error: %s", err)
