@@ -23,6 +23,17 @@ function MOCK.receive(data) -- push a server message to the QA
   MOCK.sock.listeners.dataReceived(json.encode(data))
 end
 
+-- Example HASS entity payloads collected in dev/hass_entities.json,
+-- keyed by entity_id. Run tests from the repo root.
+function MOCK.loadEntityExamples(path)
+  path = path or "dev/hass_entities.json"
+  local f = io.open(path,"r") or io.open("hass_entities.json","r")
+  assert(f,"cannot open "..path.." (run from the repo root)")
+  local data = f:read("*a")
+  f:close()
+  return json.decode(data)
+end
+
 function MOCK.stateChanged(new_state,old_state)
   MOCK.receive({type="event",
     event={data={entity_id=new_state.entity_id, new_state=new_state, old_state=old_state}}})

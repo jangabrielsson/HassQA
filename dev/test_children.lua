@@ -25,6 +25,7 @@
 
 MOCK.states[#MOCK.states+1] = {entity_id="fan.test", state="on",
   attributes={friendly_name="Test fan", percentage=50}}
+MOCK.states[#MOCK.states+1] = MOCK.loadEntityExamples()["climate.bedroom"]
 
 local Test = require("flua-test")
 local t = Test.new()
@@ -58,7 +59,19 @@ local function run()
         {"sensor.temp_test"},"Thermostat")
     end)
     t:expect(ok,"thermostat with missing climate entity does not crash: "..tostring(err))
-    t:finish()
+
+    -- Thermostat with a real climate entity (from dev/hass_entities.json)
+    local thermo = quickApp:newChildQA("uid_climate","Climate test",nil,
+      {"climate.bedroom"},"Thermostat")
+    t:expect(thermo ~= nil,"climate thermostat child created")
+    setTimeout(function()
+      local dev2 = api.get("/devices/"..thermo.id)
+      t:assert_eq(dev2.properties.thermostatMode,"Off",
+        "thermostat mode from climate example state")
+      t:expect(table.equal(dev2.properties.supportedThermostatModes,{"Heat","Cool","Off"}),
+        "supported modes derived from hvac_modes")
+      t:finish()
+    end,100)
   end,100)
 end
 

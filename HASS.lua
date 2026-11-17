@@ -150,56 +150,8 @@ function QuickApp:onInit()
   WS:connect()
 end
 
-local climate = json.decode([[{
-        "entity_id": "climate.bedroom",
-        "state": "off",
-        "attributes": {
-            "hvac_modes": [
-                "cool",
-                "heat",
-                "dry",
-                "heat_cool",
-                "fan_only",
-                "off"
-            ],
-            "min_temp": 17,
-            "max_temp": 30,
-            "target_temp_step": 1,
-            "fan_modes": [
-                "quiet",
-                "low",
-                "medium",
-                "medium_high",
-                "high",
-                "auto",
-                "strong"
-            ],
-            "swing_modes": [
-                "stopped",
-                "fixedtop",
-                "fixedmiddletop",
-                "fixedmiddle",
-                "fixedmiddlebottom",
-                "fixedbottom",
-                "rangefull"
-            ],
-            "current_temperature": 19.3,
-            "temperature": 22,
-            "current_humidity": 54.2,
-            "fan_mode": "auto",
-            "swing_mode": "stopped",
-            "friendly_name": "Bedroom",
-            "supported_features": 425
-        },
-        "last_changed": "2025-01-15T07:41:04.434429+00:00",
-        "last_reported": "2025-01-15T16:01:10.388966+00:00",
-        "last_updated": "2025-01-15T16:01:10.388966+00:00",
-        "context": {
-            "id": "01JHNB4ZQMHP2RW0YB085X2SYX",
-            "parent_id": null,
-            "user_id": null
-        }
-    }]])
+-- Example HASS entity payloads live in dev/hass_entities.json
+-- (loadable in offline tests via MOCK.loadEntityExamples()).
 
 function QuickApp:authenticated() -- Called when websocket is (re)authenticated
   DEBUGF('main',"Fetching HASS entities")
@@ -207,7 +159,6 @@ function QuickApp:authenticated() -- Called when websocket is (re)authenticated
     data = data.result
     local entities = HASS.entities
     DEBUGF('main',"...fetched %d entities",#data)
-    -- table.insert(data,1,climate)
     for _,e in ipairs(data) do
       if not entityFilter:skip(e) then
         local entity = entities[e.entity_id]
