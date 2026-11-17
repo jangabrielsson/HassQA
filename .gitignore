@@ -9,6 +9,7 @@ test/
 tmp/
 emu/
 
-
+# full dump of the real HASS — private data, never commit
+dev/hass_entities_local.json
 
 !HassQA.fqa

@@ -1,0 +1,43 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+
+      - name: Install flua
+        run: pip install "fibaro-flua>=0.1.166"
+
+      - name: Static check
+        run: flua --check HASS.lua
+
+      - name: Regression tests (offline sim, virtual time)
+        run: |
+          for f in dev/test_*.lua; do
+            echo "=== $f"
+            flua --api local --instant "$f"
+          done
+
+      - name: Pack and verify the .fqa artifact
+        run: |
+          flua --tool pack HASS.lua -o /tmp/HassQA.fqa -f
+          python3 - <<'EOF'
+          import json
+          fqa = json.load(open('/tmp/HassQA.fqa'))
+          assert fqa['name'] == 'HASS', f"unexpected QA name: {fqa['name']}"
+          qv = {v['name']: v['value'] for v in fqa['initialProperties']['quickAppVariables']}
+          assert qv['url'].startswith('<'), "real HASS url leaked into the fqa!"
+          assert qv['token'].startswith('<'), "real HASS token leaked into the fqa!"
+          names = [f['name'] for f in fqa['files']]
+          print('fqa OK:', fqa['name'], names, dict(qv))
+          EOF
