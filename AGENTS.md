@@ -130,7 +130,7 @@ Release automation lives in `scripts/` (same style as the Dirigera project):
   packs the .fqa, commits, tags, pushes, creates the GitHub release, and
   generates a forum post. `--preview` shows the notes without writing.
 - `./scripts/setversion.sh X.Y.Z` — bump the version in `.version` and
-  `local VERSION` in `HASS.lua`.
+  `local VERSION` in `src/HASS.lua`.
 
 The packed artifact is **`HassQA.fqa` in the repo root** (see the
 `!HassQA.fqa` exception in `.gitignore`), not `dist/`. The qaDist manifest

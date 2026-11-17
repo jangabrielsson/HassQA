@@ -29,7 +29,7 @@ VERSION_FILE=".version"
 # NOTE: keep in sync with qaDist's dist.json entry
 #       (versionFile "main", versionPattern 'local VERSION = "..."')
 declare -a VERSION_FILES=(
-    "HASS.lua:local VERSION"
+    "src/HASS.lua:local VERSION"
 )
 
 # ============================================================================
@@ -45,7 +45,7 @@ DIST_DIR="."
 # Format: "source_file:output_file:build_command"
 # The build_command can use {SOURCE} and {OUTPUT} placeholders
 declare -a ARTIFACTS=(
-    "HASS.lua:HassQA.fqa:flua --tool pack {SOURCE} -o {OUTPUT} -f"
+    "src/HASS.lua:HassQA.fqa:flua --tool pack {SOURCE} -o {OUTPUT} -f"
 )
 
 # Files to include in git commits for releases
@@ -54,11 +54,11 @@ declare -a ARTIFACTS=(
 declare -a RELEASE_FILES=(
     ".version"
     "CHANGELOG.md"
-    "HASS.lua"
-    "Utils.lua"
-    "Classes.lua"
-    "Config.lua"
-    "User.lua"
+    "src/HASS.lua"
+    "src/Utils.lua"
+    "src/Classes.lua"
+    "src/Config.lua"
+    "src/User.lua"
     "HassQA.fqa"
 )
 

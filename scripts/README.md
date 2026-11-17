@@ -8,7 +8,7 @@ release with artifacts, and generates a forum post.
 
 - **`project-config.sh`** - HassQA-specific settings (version, artifact, files)
 - **`create-release.sh`** - Main release automation (interactive)
-- **`setversion.sh`** - Update the version number in `.version` and `HASS.lua`
+- **`setversion.sh`** - Update the version number in `.version` and `src/HASS.lua`
 - **`forum-post-generator.sh`** - Generate an HTML forum post for a release
 
 ## Quick Start
@@ -23,7 +23,7 @@ The interactive flow asks for the bump type (patch/minor/major/custom) and
 release notes (auto-generated from git commits, custom, or default), shows a
 summary, and on confirmation:
 
-1. Bumps the version in `.version` and `HASS.lua` (`local VERSION`)
+1. Bumps the version in `.version` and `src/HASS.lua` (`local VERSION`)
 2. Prepends the new entry to `CHANGELOG.md`
 3. Packs `HassQA.fqa` with `flua --tool pack` — **into the repo root**, not `dist/`
 4. Commits and pushes the release files, creates and pushes the tag `vX.Y.Z`

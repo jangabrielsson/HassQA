@@ -19,7 +19,7 @@ jobs:
         run: pip install "fibaro-flua>=0.1.166"
 
       - name: Static check
-        run: flua --check HASS.lua
+        run: flua --check src/HASS.lua
 
       - name: Regression tests (offline sim, virtual time)
         run: |
@@ -30,7 +30,7 @@ jobs:
 
       - name: Pack and verify the .fqa artifact
         run: |
-          flua --tool pack HASS.lua -o /tmp/HassQA.fqa -f
+          flua --tool pack src/HASS.lua -o /tmp/HassQA.fqa -f
           python3 - <<'EOF'
           import json
           fqa = json.load(open('/tmp/HassQA.fqa'))

@@ -13,11 +13,11 @@
 
 --%%file:$qwikchild.lua,QChild
 --%%file:mock_ws.lua,mock
---%%file:../Utils.lua,utils
---%%file:../Classes.lua,classes
---%%file:../Config.lua,config
---%%file:../User.lua,User
---%%file:../HASS.lua,hass
+--%%file:../src/Utils.lua,utils
+--%%file:../src/Classes.lua,classes
+--%%file:../src/Config.lua,config
+--%%file:../src/User.lua,User
+--%%file:../src/HASS.lua,hass
 
 --%%u:{label="title",text="Label (Title)"}
 --%%u:{label="qaInfo",text="QA info"}
