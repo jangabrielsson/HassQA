@@ -228,7 +228,7 @@ function HASSChild:__init(device)
   self.uid = self._uid
   local entity_ids = self:internalStorageGet("entities") or {}
   local hasToSave,NL = false,{}            -- Remove entitys that don't exist anymore
-  for i,entity_id in ipairs(entity_ids) do
+  for _,entity_id in ipairs(entity_ids) do
     if not HASS.entities[entity_id] then
       WARNINGF("Entity %s for QA %s not found - removed",entity_id,self.id)
       hasToSave = true
@@ -249,7 +249,7 @@ function HASSChild:__init(device)
     self:_addEntity(entity_id)
   end
   if HASS.proposeBattery and self.mainId then self:tryToAddBattery(self.mainId) end
-  for typ,d in pairs(self.entityTypes) do -- sort entities by id, to have a stable order
+  for _,d in pairs(self.entityTypes) do -- sort entities by id, to have a stable order
     table.sort(d,function(a,b) return a.id < b.id end)
   end
   if self.main and self.main.attributes.unit_of_measurement then
@@ -475,7 +475,7 @@ function Switch:turnOff() self:send(self.mainId,"turn_off") end
 function Switch:toggle() self:send(self.mainId,"toggle") end
 
 local function toOsTime(str)
-  local y,m,day,h,min,s,offs = str:match("(%d+)-(%d+)-(%d+)T(%d+):(%d+):(%d+)(.*)")
+  local y,m,day,h,min,s = str:match("(%d+)-(%d+)-(%d+)T(%d+):(%d+):(%d+)")
   if not y then return 0 end
   local t = os.time({year=y,month=m,day=day,hour=h,min=min,sec=s})
   return os.utc2time(t)
@@ -510,7 +510,7 @@ function Button:emitEvent(attr)
     source = self.id,
     data = { keyAttribute = modifier, keyId = key }
   }
-  local a,b = api.post("/plugins/publishEvent", data)
+  api.post("/plugins/publishEvent", data)
 end
 
 class 'Rotary'(Button)
@@ -529,7 +529,6 @@ end
 function Rotary:emitEvent(attr)
   local steps = tonumber(attr.steps)
   --local action = attr.action
-  local duration = tonumber(attr.duration)
   local dir = attr.event_type == "clock_wise" and 1 or -1
   local val = fibaro.getValue(self.id,"value")
   val = val + dir*steps
@@ -790,10 +789,8 @@ end
 function Cover:update(entity)
   self.mainId = entity
   self:logState(entity)
-  local state = entity.state
   local percentage = entity.attributes.current_position or 0
-  local val = percentage or 0
-  self:updateProperty('value',val)
+  self:updateProperty('value',percentage)
 end
 
 class 'Thermostat'(HASSChild) --TBD
@@ -837,14 +834,14 @@ function Thermostat:update(entity)
   local state = entity.state
   local a = entity.attributes
   self:updateProperty('thermostatMode',state:capitalize())
-  local value,min,max = a.temperature,a.min_temp,a.max_temp 
+  local value = a.temperature
   if state == 'heat' then
-    self:updateProperty('heatingThermostatSetpoint', { value= a.temperature, unit= unit or "C" })
+    self:updateProperty('heatingThermostatSetpoint', { value= value, unit= "C" })
   elseif state == 'cool' then
-    self:updateProperty('coolingThermostatSetpoint', { value= value, unit= unit or "C" })
+    self:updateProperty('coolingThermostatSetpoint', { value= value, unit= "C" })
   elseif state == 'auto' then
-    self:updateProperty('heatingThermostatSetpoint', { value= value, unit= unit or "C" })
-    self:updateProperty('coolingThermostatSetpoint', { value= value, unit= unit or "C" })
+    self:updateProperty('heatingThermostatSetpoint', { value= value, unit= "C" })
+    self:updateProperty('coolingThermostatSetpoint', { value= value, unit= "C" })
   end
   self:updateView('presetSelector','selectedItem',a.preset_mode)
 end
@@ -915,11 +912,11 @@ function Calendar:update(entity)
   local descr = entity.attributes.description or ""
   self.qvar.description = descr
   self.qvar.message = entity.attributes.message
-  local event,descr,before = descr:match("#(.-);(.-);?([%d:]*)#")
+  local event,evDescr,before = descr:match("#(.-);(.-);?([%d:]*)#")
   before = before or ""
   if event then
     self.qvar.event = event
-    self.qvar.eventDescr = descr or ""
+    self.qvar.eventDescr = evDescr or ""
   end
   if entity.state=='off' and before~="" then
     -- 2025-01-21 18:00:00
@@ -928,12 +925,12 @@ function Calendar:update(entity)
     if self.timer then clearTimeout(self.timer) end
     self.timer = setTimeout(function()
       self.timer = nil
-      self:publishEvent(event,descr) end,
+      self:publishEvent(event,evDescr) end,
       (t-os.time())*1000
     )
     -- timer for event
   elseif entity.state=='on' and before=="" then
-    self:publishEvent(event,descr)
+    self:publishEvent(event,evDescr)
   end
   self:updateProperty('value',entity.state=='on')
 end

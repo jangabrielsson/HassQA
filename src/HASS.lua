@@ -42,7 +42,6 @@ of this license document, but changing it is not allowed.
 --% %debug:refresh:false
 
 local VERSION = "0.75.1"
-local fmt = string.format
 local token,URL
 local dfltDebugFlags = "child"
 local MessageHandler = {}
@@ -69,11 +68,11 @@ function MessageHandler.auth_ok(data,ws)
 end
 
 function MessageHandler.event(data,ws)
-  local data = data.event.data
-  local entity_id = data.entity_id
+  local ev = data.event.data
+  local entity_id = ev.entity_id
   DEBUGF('event',"Event %s",entity_id)
   local entity = HASS.entities[entity_id]
-  if data.new_state == nil then -- entity removed from HASS
+  if ev.new_state == nil then -- entity removed from HASS
     DEBUGF('late',"Entity %s removed",entity_id)
     if entity then -- tell subscribers it's gone, then drop it
       entity:change({state='unavailable',attributes=entity.attributes})
@@ -82,15 +81,15 @@ function MessageHandler.event(data,ws)
     skippedEntities[entity_id] = nil
     return
   end
-  if entity then entity:change(data.new_state,data.old_state)
+  if entity then entity:change(ev.new_state,ev.old_state)
   elseif skippedEntities[entity_id] then
     DEBUGF('event',"Ignoring %s",entity_id)
-  elseif entityFilter:skip(data.new_state) then -- late entity matching the filter
+  elseif entityFilter:skip(ev.new_state) then -- late entity matching the filter
     DEBUGF('event',"Skipping late entity %s",entity_id)
     skippedEntities[entity_id] = true
   else -- late entity after a HASS restart? or a newly created entity
     DEBUGF("late","Late entity %s",entity_id)
-    local stat,entity = pcall(Entity,data.new_state)
+    local stat,entity = pcall(Entity,ev.new_state)
     if not stat then 
       ERRORF("Error creating entity %s",entity_id)
     else
@@ -255,7 +254,7 @@ end
 
 function QuickApp:populatePopup(children)
   local options = {}
-  for uid,d in pairs(children) do
+  for _,d in pairs(children) do
     local c = self.childDevices[d.id]
     options[#options+1] = {text=c.id.." "..c.name,type="option",value=tostring(c.id)}
   end
@@ -264,7 +263,7 @@ function QuickApp:populatePopup(children)
   self:updateView("qaSelect","options",options)
 
   local classes = {}
-  for name,cls in pairs(HASS.classes) do
+  for name in pairs(HASS.classes) do
     classes[#classes+1] = {text=name,type="option",value=name}
   end
   table.sort(classes,function(a,b) return a.text < b.text end)
@@ -293,7 +292,7 @@ function QuickApp:qaSelected(data)
     selectedQA = child
     selectedClass = child._className
     local values = {}
-    for id,entity in pairs(child.entities) do
+    for id in pairs(child.entities) do
       values[#values+1] = id
     end
     selectedEntities = values
@@ -375,11 +374,6 @@ function QuickApp:newChildQA(uid,name,room,entity_ids,className)
     WARNINGF("Room %s not found",room)
     room = nil
   end
-  local found = false
-  for _,id in ipairs(entity_ids) do
-    local entity = HASS.entities[id]
-    if entity and entity.type == 'sensor_battery' then found=true break end
-  end
 
   local props = {
     name = name,
@@ -439,7 +433,6 @@ function QuickApp:syncStates()
   DEBUGF('main',"Fetching HASS entity states")
   self.WS:send({type= "get_states"},function(data)
     data = data.result
-    local entities = HASS.entities
     DEBUGF('main',"...fetched %d entities",#data)
     for _,e in ipairs(data) do
       if HASS.entities[e.entity_id] then

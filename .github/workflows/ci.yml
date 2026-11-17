@@ -18,8 +18,14 @@ jobs:
       - name: Install flua
         run: pip install "fibaro-flua>=0.1.166"
 
+      - name: Install luacheck
+        run: sudo apt-get update -q && sudo apt-get install -y lua-check
+
       - name: Static check
         run: flua --check src/HASS.lua
+
+      - name: Lint (luacheck, project .luacheckrc)
+        run: luacheck src/ dev/
 
       - name: Regression tests (offline sim, virtual time)
         run: |

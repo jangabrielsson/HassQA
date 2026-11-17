@@ -206,7 +206,6 @@ function HASS.createEntityFilter()
     nodes[#nodes+1] = {path=parts,val=f}
   end
   local function skip0(entity,node,val)
-    local ep = nil
     for _,part in ipairs(node) do
       entity = entity[part]
       if entity == nil then break end
