@@ -16,7 +16,10 @@ Full reference for Devices (15), Plugins (15), QuickApp (11), and Additional Int
     sim matches the encoded `&` form correctly (and logs a warning) — a
     deliberate difference.
   - `?interface=quickApp`
-  - `?type=com.fibaro.binarySwitch`
+  - `?type=com.fibaro.binarySwitch` — **exact** type match
+  - `?isTypeOf=com.fibaro.binarySensor` — **inheritance** match: the whole
+    parent chain (a motionSensor IS a securitySensor IS a binarySensor IS a
+    sensor — live-verified; `type=` would miss it, `isTypeOf=` hits it).
   - `?roomID=5`
   - `?enabled=true`
   - `?property=[name,value]` — filter by a device property; the HC3 stringifies

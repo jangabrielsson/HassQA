@@ -226,29 +226,58 @@ http:listen(0, function(req)  -- {method,url,headers,body}
 end)
 local tcp = net.TCPServer()      -- tcp:listen(0, function(data) return data:upper() end)
 local udp = net.UDPServer()      -- udp:listen(0, function(data, ip, port) return "got:"..data end)
-local ws = net.WebSocketServer() -- ws:listen(0, function(msg, isBinary) return "echo:"..msg end)
+local ws = net.WebSocketServer() -- ws:listen(0, function(msg, isBinary, conn) return "echo:"..msg end)
 -- port 0 = free port; read server.port
 net.HTTPClient():request("http://127.0.0.1:" .. http.port .. "/x", {
   success = function(resp) print("mock answered", resp.status, resp.data) end,
 })
 ```
 
+The WebSocket server is message-based, not one-shot: besides the optional
+synchronous reply it can talk FIRST — the shape event-driven services need
+(Sonos subscribe → pushed events):
+
+```lua
+ws:send(conn, data) / ws:sendBinary(conn, data)  -- push to one connection
+ws:broadcast(data)                                -- push to every open one
+ws:disconnect(conn)                               -- server-side close, for
+                                                  -- client-reconnect tests
+ws:addEventListener("connected"|"disconnected", function(conn) ... end)
+```
+
+Track conn ids on subscribe and drop them on `disconnected` (per-connection
+subscription state, like a real server). After `ws:disconnect(conn)`, assert
+the client reconnects AND resubscribes. The quickapp-patterns skill has the
+full recipe.
+
 One-shot request/response semantics: the TCP handler sees the first data
-package, UDP one datagram, WS one message (binary replies come back as
-binary frames). Handler errors reply `500` (HTTP); no reply within 10 s is
-`504`. `server:close()` stops a server; servers die with their QA. Canonical
-self-test: `examples/mockServer.lua` (`flua --examples` prints the dir).
+package, UDP one datagram, HTTP one request, WS one message (binary replies
+come back as binary frames). Handler errors reply `500` (HTTP); no reply
+within 10 s is `504`. `server:close()` stops a server; servers die with
+their QA. Canonical self-test: `examples/mockServer.lua` (`flua --examples`
+prints the dir).
 
 Handlers are plain closures — they can keep mock state across requests
 (`local hits = 0`), branch on `req.url`, and call `api.get` etc. like any QA
-code. The reply is the handler's *synchronous* return value, so a mock
-cannot simulate latency; for client-timeout tests use an unreachable port or
-close the server before the client connects.
+code. HTTP/TCP/UDP replies are the handler's *synchronous* return value, so
+a mock cannot delay a reply (ws *pushes* can be delayed via `setTimeout` +
+`ws:send`, which covers event latency); for reply-timeout tests use an
+unreachable port or close the server before the client connects.
 
 Mock code can live in a separate file next to the QA: `require("mocklib")`
 finds `mocklib.lua` in the QA's directory and is **not** packaged into the
 `.fqa` (only `--%%file` files ship) — keep test scaffolding out of what gets
 deployed to the HC3.
+
+> **Virtual time meets real I/O.** Socket round-trips run in wall time,
+> timers in virtual time. At `--speed 50` a 300 ms virtual delay is ~6 ms
+> wall — shorter than a localhost ws round-trip — so **never use fixed
+> delays to wait for network effects**: poll the condition every ~100 ms
+> virtual with a generous timeout instead (and scale the timeout with
+> `--speed`). Wall-paced messages also *spread out* in virtual time, so
+> virtual-timestamped logs can look slow when they are not. And remember
+> shell pipes buffer until EOF: `flua … | tail` showing nothing for minutes
+> is a slow pipeline, not a hung emulator.
 
 ## Seeding the simulated HC3
 

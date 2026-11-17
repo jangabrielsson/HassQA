@@ -47,6 +47,10 @@ warnings are the migration map. Then walk this checklist.
 
 ## Known behavioral differences (current flua)
 
+- **plua's `api.*(path, "hc3")` source argument** — plua used the second
+  argument to force the call at the controller; flua treats it as the
+  request body (harmless for GETs — `api.get("/icons", "hc3")` runs and
+  answers normally). No change needed, just know it is ignored.
 - **`--api remote` wins over the main QA's `--%%mode:offline`** — the flag
   outranks the header; *secondary* QAs' `--%%mode:offline` pins still hold.
   `_FLUA.mode` reports the effective mode.
