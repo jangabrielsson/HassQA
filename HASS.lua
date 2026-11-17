@@ -240,8 +240,11 @@ end
 local logTimer = nil
 function QuickApp:log(str)
   if logTimer then clearTimeout(logTimer) end
-  logTimer = self:updateView("logLabel","text",str)
-  setTimeout(function() self:updateView("logLabel","text","") end,5000)
+  self:updateView("logLabel","text",str)
+  logTimer = setTimeout(function()
+    logTimer = nil
+    self:updateView("logLabel","text","")
+  end,5000)
 end
 
 local n = 0

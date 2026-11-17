@@ -282,7 +282,7 @@ function HASSChild:_addEntity(entity_id)
     table.insert(self.entityTypes[typ],e)
     setTimeout(function() e:subscribe(self) end,0) -- QA gets update after initialized
   else
-    WARNINGF("Entity %s for QA %s not found",entity,self.id)
+    WARNINGF("Entity %s for QA %s not found",entity_id,self.id)
   end
 end
 
@@ -745,7 +745,7 @@ function Fan:setOscillating(osc) self:send(self.mainId,"oscillate",{oscillating 
 function Fan:setPresetMode(mode) self:send(self.mainId,"set_preset_mode",{preset_mode = mode}) end
 function Fan:logState(entity)
   local a = entity.attributes
-  self:debugf("%s %s%% dir:%s osc:%s",d.state,a.percentage or 0,a.direction or 0,a.oscillating or 0)
+  self:debugf("%s %s%% dir:%s osc:%s",entity.state,a.percentage or 0,a.direction or 0,a.oscillating or 0)
 end
 function Fan:update(entity)
   self.mainId = entity
@@ -802,12 +802,15 @@ function Thermostat:__init(device)
   HASSChild.__init(self, device)
   self:registerUICallback('presetSelector', 'onToggled', 'presetSelected')
   self.mainId = self:firstEntityType('climate_hvac')
+  if not self.mainId then
+    return ERRORF("Thermostat QA %s has no climate_hvac entity",self.id)
+  end
   local a = self.mainId.attributes
   local modes = {}
-  if table.member(a.hvac_modes,'heat') then modes[#modes+1] = 'Heat' end
-  if table.member(a.hvac_modes,'cool') then modes[#modes+1] = 'Cool' end
-  if table.member(a.hvac_modes,'auto') then modes[#modes+1] = 'Auto' end
-  if table.member(a.hvac_modes,'off') then modes[#modes+1] = 'Off' end
+  if table.member(a.hvac_modes or {},'heat') then modes[#modes+1] = 'Heat' end
+  if table.member(a.hvac_modes or {},'cool') then modes[#modes+1] = 'Cool' end
+  if table.member(a.hvac_modes or {},'auto') then modes[#modes+1] = 'Auto' end
+  if table.member(a.hvac_modes or {},'off') then modes[#modes+1] = 'Off' end
   self:updateProperty('supportedThermostatModes', modes)
   local presetModes = {}
   for _,p in ipairs(a.preset_modes or {}) do

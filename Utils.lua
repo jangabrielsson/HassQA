@@ -3,7 +3,7 @@ HASS = HASS or {}
 local fmt = string.format
 function printf(fmt,...) print(fmt:format(...)) end
 function color(col,fm,...)
-  str = fmt(fm,...)
+  local str = fmt(fm,...)
   return fmt('<font color="%s">%s</font>',col,str)
 end
 function printc(col,fm,...) print(color(col,fm,...)) end
