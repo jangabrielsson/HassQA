@@ -60,11 +60,11 @@ Receives incoming messages from the websocket and dispatches
 to Entity objects that sends the state changes on to subscribing child QAs
 --------------------------------------------------------------]]
 function MessageHandler.auth_required(data,ws)
-  DEBUGF('test',"Websocket auth reqired")
+  DEBUGF('wsc',"Websocket auth required")
   ws:sendRaw({type= "auth",access_token = token})
 end
 function MessageHandler.auth_ok(data,ws)
-  DEBUGF('test',"Websocket auth OK")
+  DEBUGF('wsc',"Websocket auth OK")
   quickApp:authenticated()
 end
 
@@ -211,7 +211,6 @@ function QuickApp:loadAuto()
     if d.auto then
       local types = type(d.auto) == 'string' and {d.auto} or d.auto
       for _,typ in ipairs(types) do
-        print(className)
         self:loadAutoAux(className,typ)
       end
     end
@@ -355,11 +354,9 @@ function QuickApp:buttonB()
   else self:deleteQA() end
 end
 
-local n = 0
 function QuickApp:createQA()
   if not selectedClass then return end
   local entities = selectedEntities or {}
-  n=n+1
   local uid = self:newUID()
   local name = HASS.nameNewQA(firstEntity and firstEntity.name or "New QA")
   local room = HASS.defaultRoom
@@ -433,8 +430,7 @@ end
 function QuickApp:deleteAllChildren()
   local children = api.get("/devices?parentId="..self.id) or {}
   for _,child in ipairs(children) do
-    local a,b = api.delete("/plugins/removeChildDevice/" .. child.id)
-    a=b
+    api.delete("/plugins/removeChildDevice/" .. child.id)
   end
   self:restart()
 end
@@ -454,8 +450,20 @@ function QuickApp:syncStates()
   end)
 end
 
-function QuickApp:dumpConfig()
-  DEBUGF('main',"Dumping config")
+function QuickApp:dumpConfig() -- Print the child QA setup, recreatable as class .qa entries
+  local nEntities = 0
+  for _ in pairs(HASS.entities) do nEntities = nEntities+1 end
+  printf("HASS QA v%s — %d entities, children:",VERSION,nEntities)
+  local uids = {}
+  for uid in pairs(self.children or {}) do uids[#uids+1] = uid end
+  table.sort(uids)
+  for _,uid in ipairs(uids) do
+    local child = self.children[uid]
+    printf("  [%s] id:%s class:%s name:'%s'",uid,child.id,child._className,child.name)
+    for _,entity_id in ipairs(child._rawEntities or {}) do
+      printf("    - %s",tostring(HASS.entities[entity_id] or entity_id))
+    end
+  end
 end
 
 function QuickApp:restart() plugin.restart() end

@@ -172,8 +172,6 @@ function string.buff(b)
   function self.printf(fmt,...) table.insert(buff,fmt:format(...)) end
   function self.tostring()
     local str = table.concat(buff)
-    local str2 = str:gsub("\n","<br>")
-    str2 = str2:gsub("  ","&nbsp;&nbsp;")
     buff = {}
     return str
   end

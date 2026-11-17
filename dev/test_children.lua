@@ -70,6 +70,8 @@ local function run()
         "thermostat mode from climate example state")
       t:expect(table.equal(dev2.properties.supportedThermostatModes,{"Heat","Cool","Off"}),
         "supported modes derived from hvac_modes")
+      local ok2,err2 = pcall(function() quickApp:dumpConfig() end)
+      t:expect(ok2,"dumpConfig prints the child setup: "..tostring(err2))
       t:finish()
     end,100)
   end,100)
