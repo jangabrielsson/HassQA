@@ -1,4 +1,64 @@
 {
+  "binary_sensor.dorr_a": {
+    "entity_id": "binary_sensor.dorr_a",
+    "last_changed": "2026-11-17T22:00:50.243762+00:00",
+    "last_reported": "2026-11-17T22:00:50.243762+00:00",
+    "last_updated": "2026-11-17T22:00:50.243762+00:00",
+    "attributes": {
+      "supported_features": 0,
+      "restored": true,
+      "icon": "",
+      "friendly_name": "Dörr A",
+      "device_class": "window"
+    },
+    "context": {
+      "id": "01M7NRDTT341W1Y9JD5HPEC457"
+    },
+    "state": "unavailable"
+  },
+  "binary_sensor.front_door_opening": {
+    "entity_id": "binary_sensor.front_door_opening",
+    "last_changed": "2026-11-17T22:00:42.324917+00:00",
+    "last_reported": "2026-11-17T22:00:42.324917+00:00",
+    "last_updated": "2026-11-17T22:00:42.324917+00:00",
+    "attributes": {
+      "friendly_name": "Front Door Opening",
+      "device_class": "opening"
+    },
+    "context": {
+      "id": "01M7NRDK2M3Q4MHDDMQV04S1A2"
+    },
+    "state": "off"
+  },
+  "binary_sensor.living_room_sensor_motion": {
+    "entity_id": "binary_sensor.living_room_sensor_motion",
+    "last_changed": "2026-11-17T22:00:42.324481+00:00",
+    "last_reported": "2026-11-17T22:00:42.324481+00:00",
+    "last_updated": "2026-11-17T22:00:42.324481+00:00",
+    "attributes": {
+      "friendly_name": "Living room sensor Motion",
+      "device_class": "motion"
+    },
+    "context": {
+      "id": "01M7NRDK2M4HN8FNNS8FYXFYYJ"
+    },
+    "state": "unavailable"
+  },
+  "calendar.helgdagar_i_sverige": {
+    "entity_id": "calendar.helgdagar_i_sverige",
+    "last_changed": "2026-11-17T22:00:50.244612+00:00",
+    "last_reported": "2026-11-17T22:00:50.244612+00:00",
+    "last_updated": "2026-11-17T22:00:50.244612+00:00",
+    "attributes": {
+      "restored": true,
+      "friendly_name": "Helgdagar i sverige",
+      "supported_features": 0
+    },
+    "context": {
+      "id": "01M7NRDTT43WK9P4Y2XCPT4EMN"
+    },
+    "state": "unavailable"
+  },
   "climate.bedroom": {
     "entity_id": "climate.bedroom",
     "state": "off",
@@ -48,5 +108,519 @@
       "parent_id": null,
       "user_id": null
     }
+  },
+  "climate.mythermostat": {
+    "entity_id": "climate.mythermostat",
+    "last_changed": "2026-11-17T22:00:41.833759+00:00",
+    "last_reported": "2026-11-17T22:00:41.833759+00:00",
+    "last_updated": "2026-11-17T22:00:41.833759+00:00",
+    "attributes": {
+      "target_temp_step": 0.1,
+      "supported_features": 401,
+      "preset_mode": "sleep",
+      "preset_modes": [
+        "none",
+        "away",
+        "comfort",
+        "eco",
+        "home",
+        "sleep",
+        "activity"
+      ],
+      "hvac_modes": [
+        "heat",
+        "off"
+      ],
+      "min_temp": 10.0,
+      "hvac_action": "idle",
+      "temperature": 24.0,
+      "friendly_name": "Smart kontakt MyThermostat",
+      "max_temp": 30.0
+    },
+    "context": {
+      "id": "01M7NRDJK93NKD40FDWXA0ZEZ0"
+    },
+    "state": "heat"
+  },
+  "cover.test_cover_cover": {
+    "entity_id": "cover.test_cover_cover",
+    "last_changed": "2026-11-17T22:00:50.244352+00:00",
+    "last_reported": "2026-11-17T22:00:50.244352+00:00",
+    "last_updated": "2026-11-17T22:00:50.244352+00:00",
+    "attributes": {
+      "restored": true,
+      "friendly_name": "Test Cover Cover",
+      "supported_features": 15
+    },
+    "context": {
+      "id": "01M7NRDTT4WB328Q7T5BQCDBM8"
+    },
+    "state": "unavailable"
+  },
+  "device_tracker.test_device_tracker": {
+    "entity_id": "device_tracker.test_device_tracker",
+    "last_changed": "2026-11-17T22:00:50.244373+00:00",
+    "last_reported": "2026-11-17T22:00:50.244373+00:00",
+    "last_updated": "2026-11-17T22:00:50.244373+00:00",
+    "attributes": {
+      "restored": true,
+      "friendly_name": "Test Device_Tracker",
+      "supported_features": 0
+    },
+    "context": {
+      "id": "01M7NRDTT4P73R15SXM56E01EG"
+    },
+    "state": "unavailable"
+  },
+  "event.dimmer_switch_button_1": {
+    "entity_id": "event.dimmer_switch_button_1",
+    "last_changed": "2026-11-17T22:00:42.328849+00:00",
+    "last_reported": "2026-11-17T22:00:42.328849+00:00",
+    "last_updated": "2026-11-17T22:00:42.328849+00:00",
+    "attributes": {
+      "device_class": "button",
+      "friendly_name": "Dimmer switch Button 1",
+      "event_types": [
+        "initial_press",
+        "repeat",
+        "short_release",
+        "long_press",
+        "long_release"
+      ]
+    },
+    "context": {
+      "id": "01M7NRDK2R3H226WZ7RYS6R244"
+    },
+    "state": "unavailable"
+  },
+  "fan.test_fan": {
+    "entity_id": "fan.test_fan",
+    "last_changed": "2026-11-17T22:00:50.244394+00:00",
+    "last_reported": "2026-11-17T22:00:50.244394+00:00",
+    "last_updated": "2026-11-17T22:00:50.244394+00:00",
+    "attributes": {
+      "preset_modes": {},
+      "restored": true,
+      "friendly_name": "Test Fan",
+      "supported_features": 55
+    },
+    "context": {
+      "id": "01M7NRDTT4S5RTV58CPDT6ZXGT"
+    },
+    "state": "unavailable"
+  },
+  "input_text.mytesttext": {
+    "entity_id": "input_text.mytesttext",
+    "last_changed": "2026-11-17T22:00:38.610092+00:00",
+    "last_reported": "2026-11-17T22:00:38.610092+00:00",
+    "last_updated": "2026-11-17T22:00:38.610092+00:00",
+    "attributes": {
+      "max": 100,
+      "editable": true,
+      "mode": "text",
+      "icon": "mdi:account-plus",
+      "friendly_name": "MyTestText",
+      "min": 0
+    },
+    "context": {
+      "id": "01M7NRDFEJPRSZ6M8B0WY61JHN"
+    },
+    "state": "HelloSSS66"
+  },
+  "light.bedroom": {
+    "entity_id": "light.bedroom",
+    "last_changed": "2026-11-17T22:00:42.340624+00:00",
+    "last_reported": "2026-11-17T22:00:42.340624+00:00",
+    "last_updated": "2026-11-17T22:00:42.340624+00:00",
+    "attributes": {
+      "xy_color": [
+        0.522,
+        0.387
+      ],
+      "hue_scenes": {},
+      "min_color_temp_kelvin": 2000,
+      "supported_color_modes": [
+        "color_temp",
+        "xy"
+      ],
+      "rgb_color": [
+        255,
+        168,
+        90
+      ],
+      "lights": [
+        "Roof lamp"
+      ],
+      "brightness": 255,
+      "dynamics": false,
+      "supported_features": 40,
+      "color_temp_kelvin": 2732,
+      "hs_color": [
+        28.327,
+        64.71
+      ],
+      "is_hue_group": true,
+      "entity_id": [
+        "light.roof_lamp"
+      ],
+      "color_mode": "color_temp",
+      "hue_type": "room",
+      "friendly_name": "Bedroom",
+      "max_color_temp_kelvin": 6535
+    },
+    "context": {
+      "id": "01M7NRDK348KJC86G52J5BGGM4"
+    },
+    "state": "on"
+  },
+  "light.hue_smart_plug_1": {
+    "entity_id": "light.hue_smart_plug_1",
+    "last_changed": "2026-11-17T22:00:42.332339+00:00",
+    "last_reported": "2026-11-17T22:00:42.332339+00:00",
+    "last_updated": "2026-11-17T22:00:42.332339+00:00",
+    "attributes": {
+      "dynamics": "none",
+      "supported_features": 0,
+      "color_mode": "onoff",
+      "supported_color_modes": [
+        "onoff"
+      ],
+      "friendly_name": "Hue smart plug 1",
+      "mode": "normal"
+    },
+    "context": {
+      "id": "01M7NRDK2WHABRWZTMZ5K41YDP"
+    },
+    "state": "on"
+  },
+  "light.hue_white_lamp_1": {
+    "entity_id": "light.hue_white_lamp_1",
+    "last_changed": "2026-11-17T22:00:42.334981+00:00",
+    "last_reported": "2026-11-17T22:00:42.334981+00:00",
+    "last_updated": "2026-11-17T22:00:42.334981+00:00",
+    "attributes": {
+      "supported_color_modes": [
+        "brightness"
+      ],
+      "friendly_name": "Hue white lamp 1",
+      "supported_features": 40
+    },
+    "context": {
+      "id": "01M7NRDK2YR7RD3W8SXBRQGJ6Y"
+    },
+    "state": "unavailable"
+  },
+  "lock.test_lock": {
+    "entity_id": "lock.test_lock",
+    "last_changed": "2026-11-17T22:00:50.244413+00:00",
+    "last_reported": "2026-11-17T22:00:50.244413+00:00",
+    "last_updated": "2026-11-17T22:00:50.244413+00:00",
+    "attributes": {
+      "restored": true,
+      "friendly_name": "Test Lock",
+      "supported_features": 0
+    },
+    "context": {
+      "id": "01M7NRDTT4G02R9H0MZQT4WSRD"
+    },
+    "state": "unavailable"
+  },
+  "media_player.kontor": {
+    "entity_id": "media_player.kontor",
+    "last_changed": "2026-11-17T22:00:43.058256+00:00",
+    "last_reported": "2026-11-17T22:00:43.353969+00:00",
+    "last_updated": "2026-11-17T22:00:43.058256+00:00",
+    "attributes": {
+      "media_content_type": "music",
+      "is_volume_muted": false,
+      "device_class": "speaker",
+      "group_members": [
+        "media_player.kontor"
+      ],
+      "source_list": [
+        "I love you baby",
+        "Jacob Collier Radio",
+        "Montecristo",
+        "Time Capsule2"
+      ],
+      "volume_level": 0.02,
+      "supported_features": 8321599,
+      "repeat": "off",
+      "friendly_name": "Kontor",
+      "shuffle": false
+    },
+    "context": {
+      "id": "01M7NRDKSJD57NKDEESQ6MQKGV"
+    },
+    "state": "idle"
+  },
+  "media_player.tv": {
+    "entity_id": "media_player.tv",
+    "last_changed": "2026-11-17T22:00:42.290383+00:00",
+    "last_reported": "2026-11-17T22:01:20.609719+00:00",
+    "last_updated": "2026-11-17T22:00:42.293663+00:00",
+    "attributes": {
+      "source_list": [
+        "TV",
+        "HDMI",
+        "Apple Music",
+        "Apple TV",
+        "Blockbuster",
+        "BritBox by BBC",
+        "Canal Digital",
+        "Disney+",
+        "Facebook Watch",
+        "Gallery",
+        "Google Play Movies",
+        "HBO",
+        "HBO Max",
+        "Internet",
+        "McAfee Security for TV",
+        "Netflix",
+        "Neverthink",
+        "Plejmo",
+        "Prime Video",
+        "Privacy Choices",
+        "Rakuten TV",
+        "SF Anytime",
+        "SVT Play",
+        "Samsung Promotion",
+        "Screens on fire",
+        "SkyShowtime",
+        "SmartThings",
+        "Spotify - Music and Podcasts",
+        "TV4 Play",
+        "Telenor Stream",
+        "Viafree",
+        "Viaplay",
+        "YouTube",
+        "discovery+",
+        "e-Manual"
+      ],
+      "volume_level": 0.05,
+      "supported_features": 24381,
+      "is_volume_muted": false,
+      "friendly_name": "TV",
+      "device_class": "tv"
+    },
+    "context": {
+      "id": "01M7NRDK1NK4FG3TF45B3Y9FJY"
+    },
+    "state": "on"
+  },
+  "sensor.dorr_a_battery_percentage": {
+    "entity_id": "sensor.dorr_a_battery_percentage",
+    "last_changed": "2026-11-17T22:00:50.244208+00:00",
+    "last_reported": "2026-11-17T22:00:50.244208+00:00",
+    "last_updated": "2026-11-17T22:00:50.244208+00:00",
+    "attributes": {
+      "unit_of_measurement": "%",
+      "state_class": "measurement",
+      "supported_features": 0,
+      "icon": "",
+      "restored": true,
+      "friendly_name": "Dörr A Battery Percentage",
+      "device_class": "battery"
+    },
+    "context": {
+      "id": "01M7NRDTT4MB8CK5ZCX19CHGT0"
+    },
+    "state": "unavailable"
+  },
+  "sensor.inne_humidity": {
+    "entity_id": "sensor.inne_humidity",
+    "last_changed": "2026-11-17T22:00:42.920414+00:00",
+    "last_reported": "2026-11-17T22:01:12.921859+00:00",
+    "last_updated": "2026-11-17T22:00:42.920414+00:00",
+    "attributes": {
+      "unit_of_measurement": "%",
+      "state_class": "measurement",
+      "friendly_name": "Inne Humidity",
+      "attribution": "Data provided by Netatmo",
+      "device_class": "humidity"
+    },
+    "context": {
+      "id": "01M7NRDKN858ZMR8EYKJZN6CTV"
+    },
+    "state": "unavailable"
+  },
+  "sensor.inne_temperature": {
+    "entity_id": "sensor.inne_temperature",
+    "last_changed": "2026-11-17T22:00:42.918936+00:00",
+    "last_reported": "2026-11-17T22:01:12.921673+00:00",
+    "last_updated": "2026-11-17T22:00:42.918936+00:00",
+    "attributes": {
+      "unit_of_measurement": "°C",
+      "state_class": "measurement",
+      "friendly_name": "Inne Temperature",
+      "attribution": "Data provided by Netatmo",
+      "device_class": "temperature"
+    },
+    "context": {
+      "id": "01M7NRDKN6EMD8EP43W44N1SPZ"
+    },
+    "state": "unavailable"
+  },
+  "sensor.living_room_sensor_illuminance": {
+    "entity_id": "sensor.living_room_sensor_illuminance",
+    "last_changed": "2026-11-17T22:00:42.358712+00:00",
+    "last_reported": "2026-11-17T22:00:42.358712+00:00",
+    "last_updated": "2026-11-17T22:00:42.358712+00:00",
+    "attributes": {
+      "unit_of_measurement": "lx",
+      "state_class": "measurement",
+      "friendly_name": "Living room sensor Illuminance",
+      "device_class": "illuminance"
+    },
+    "context": {
+      "id": "01M7NRDK3P5EXT1Q5AEPK00NAV"
+    },
+    "state": "unavailable"
+  },
+  "sensor.luftkvalite_current_pm2_5": {
+    "entity_id": "sensor.luftkvalite_current_pm2_5",
+    "last_changed": "2026-11-17T22:00:50.243961+00:00",
+    "last_reported": "2026-11-17T22:00:50.243961+00:00",
+    "last_updated": "2026-11-17T22:00:50.243961+00:00",
+    "attributes": {
+      "unit_of_measurement": "µg/m³",
+      "supported_features": 0,
+      "icon": "",
+      "restored": true,
+      "friendly_name": "Luftkvalite Current PM2.5",
+      "device_class": "pm25"
+    },
+    "context": {
+      "id": "01M7NRDTT3HFV2XPTQA78YV5HP"
+    },
+    "state": "unavailable"
+  },
+  "sensor.smart_kontakt_current_active_power": {
+    "entity_id": "sensor.smart_kontakt_current_active_power",
+    "last_changed": "2026-11-17T22:00:50.244066+00:00",
+    "last_reported": "2026-11-17T22:00:50.244066+00:00",
+    "last_updated": "2026-11-17T22:00:50.244066+00:00",
+    "attributes": {
+      "unit_of_measurement": "W",
+      "supported_features": 0,
+      "icon": "mdi:lightning-bolt-outline",
+      "restored": true,
+      "friendly_name": "Smart kontakt Current Active Power",
+      "device_class": "power"
+    },
+    "context": {
+      "id": "01M7NRDTT43ZXX4TJ0NV90ZA4E"
+    },
+    "state": "unavailable"
+  },
+  "sensor.smart_kontakt_total_energy_consumed": {
+    "entity_id": "sensor.smart_kontakt_total_energy_consumed",
+    "last_changed": "2026-11-17T22:00:50.244108+00:00",
+    "last_reported": "2026-11-17T22:00:50.244108+00:00",
+    "last_updated": "2026-11-17T22:00:50.244108+00:00",
+    "attributes": {
+      "unit_of_measurement": "kWh",
+      "state_class": "total_increasing",
+      "supported_features": 0,
+      "icon": "mdi:lightning-bolt-outline",
+      "restored": true,
+      "friendly_name": "Smart kontakt Total Energy Consumed",
+      "device_class": "energy"
+    },
+    "context": {
+      "id": "01M7NRDTT4HNH9C8THDQPMSHEA"
+    },
+    "state": "unavailable"
+  },
+  "sun.sun": {
+    "entity_id": "sun.sun",
+    "last_changed": "2026-11-17T22:00:38.749106+00:00",
+    "last_reported": "2026-11-17T22:01:08.778272+00:00",
+    "last_updated": "2026-11-17T22:00:38.749106+00:00",
+    "attributes": {
+      "next_noon": "2026-11-18T10:32:46+00:00",
+      "next_dusk": "2026-11-18T15:05:35.353135+00:00",
+      "elevation": -49.41,
+      "next_rising": "2026-11-18T06:48:57.888117+00:00",
+      "next_midnight": "2026-11-17T22:32:53+00:00",
+      "next_dawn": "2026-11-18T05:59:26.515936+00:00",
+      "next_setting": "2026-11-18T14:16:07.691951+00:00",
+      "rising": false,
+      "friendly_name": "Sun",
+      "azimuth": 348.3
+    },
+    "context": {
+      "id": "01M7NRDFJX2AF4QHAWK5VZ4ZG7"
+    },
+    "state": "below_horizon"
+  },
+  "valve.test_valve": {
+    "entity_id": "valve.test_valve",
+    "last_changed": "2026-11-17T22:00:50.244449+00:00",
+    "last_reported": "2026-11-17T22:00:50.244449+00:00",
+    "last_updated": "2026-11-17T22:00:50.244449+00:00",
+    "attributes": {
+      "restored": true,
+      "friendly_name": "Test Valve",
+      "supported_features": 15
+    },
+    "context": {
+      "id": "01M7NRDTT4SQHRGEGZVCZVYARM"
+    },
+    "state": "unavailable"
+  },
+  "weather.forecast_home": {
+    "entity_id": "weather.forecast_home",
+    "last_changed": "2026-11-17T22:00:42.310875+00:00",
+    "last_reported": "2026-11-17T22:00:42.310875+00:00",
+    "last_updated": "2026-11-17T22:00:42.310875+00:00",
+    "attributes": {
+      "pressure_unit": "hPa",
+      "attribution": "Weather forecast from met.no, delivered by the Norwegian Meteorological Institute.",
+      "humidity": 90,
+      "wind_speed_unit": "km/h",
+      "uv_index": 0.0,
+      "visibility_unit": "km",
+      "pressure": 987.1,
+      "supported_features": 3,
+      "temperature_unit": "°C",
+      "precipitation_unit": "mm",
+      "cloud_coverage": 100.0,
+      "wind_gust_speed": 28.1,
+      "wind_bearing": 337.0,
+      "wind_speed": 13.0,
+      "temperature": 3.1,
+      "friendly_name": "Forecast Home",
+      "dew_point": 1.4
+    },
+    "context": {
+      "id": "01M7NRDK2633T36AX0T0DE3EPC"
+    },
+    "state": "cloudy"
+  },
+  "zone.home": {
+    "entity_id": "zone.home",
+    "last_changed": "2026-11-17T22:00:38.172360+00:00",
+    "last_reported": "2026-11-17T22:00:41.070927+00:00",
+    "last_updated": "2026-11-17T22:00:41.070927+00:00",
+    "attributes": {
+      "persons": [
+        "person.jan_gabrielsson"
+      ],
+      "radius": 86,
+      "passive": false,
+      "latitude": "<redacted>",
+      "editable": true,
+      "device_trackers": [
+        "device_tracker.jans_14_pro"
+      ],
+      "icon": "mdi:home",
+      "friendly_name": "Home",
+      "longitude": "<redacted>"
+    },
+    "context": {
+      "id": "01M7NRDHVE4NQBR28VZR4H4SHD"
+    },
+    "state": "1"
   }
 }
