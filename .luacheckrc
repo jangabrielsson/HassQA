@@ -13,6 +13,7 @@ read_globals = {
   "api", "mqtt", "json",
   "QuickAppChild", "QwikAppChild",
   "plugin", "hub", "_FLUA", "__TAG",
+  "__assert_type", "urlencode",
   "setTimeout", "clearTimeout", "setInterval", "clearInterval",
   "_sceneId", "sourceTrigger", "RefreshStateSubscriber",
   "class", "util", "require",
