@@ -68,8 +68,8 @@ local function run()
       local dev2 = api.get("/devices/"..thermo.id)
       t:assert_eq(dev2.properties.thermostatMode,"Off",
         "thermostat mode from climate example state")
-      t:expect(table.equal(dev2.properties.supportedThermostatModes,{"Heat","Cool","Off"}),
-        "supported modes derived from hvac_modes")
+      t:assert_eq(dev2.properties.supportedThermostatModes,{"Heat","Cool","Off"},
+        "supported modes derived from hvac_modes") -- deep-equal since flua 0.1.174
       local ok2,err2 = pcall(function() quickApp:dumpConfig() end)
       t:expect(ok2,"dumpConfig prints the child setup: "..tostring(err2))
       t:finish()

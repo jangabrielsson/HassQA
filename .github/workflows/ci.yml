@@ -28,11 +28,8 @@ jobs:
         run: luacheck src/ dev/
 
       - name: Regression tests (offline sim, virtual time)
-        run: |
-          for f in dev/test_*.lua; do
-            echo "=== $f"
-            flua --api local --instant "$f"
-          done
+        timeout-minutes: 10
+        run: flua --tool test --dir dev --instant
 
       - name: Pack and verify the .fqa artifact
         run: |
